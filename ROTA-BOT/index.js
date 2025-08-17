@@ -46,6 +46,16 @@ let cargos = carregarDados('cargos.json');
 let config = carregarDados('config.json');
 let servidores = carregarDados('servidores.json');
 
+function getServerConfig(guildId) {
+  if (!config[guildId]) {
+    config[guildId] = {
+      cargosLiberados: {},
+      adminsAdicionais: {}
+    };
+  }
+  return config[guildId];
+}
+
 // Verificar se servidor está autorizado
 function servidorAutorizado(guildId) {
     return servidores.autorizados && servidores.autorizados[guildId];
