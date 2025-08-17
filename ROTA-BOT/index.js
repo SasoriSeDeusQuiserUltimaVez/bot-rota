@@ -166,55 +166,26 @@ const commands = [
                 .setRequired(true)
         )
         .addChannelOption(option =>
-    // Verificar se usuário tem permissão para aprovar
-    if (!isServerAdmin(guildId, interaction.user.id)) {
-      const errorEmbed = new EmbedBuilder()
-        .setColor(CORES.ERRO)
-        .setTitle("❌ Sem Permissão")
-        .setDescription("Apenas administradores podem aprovar solicitações.");
-      
-      return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
-    }
-    
-    // Mostrar menu de cargos liberados
-    const serverConfig = getServerConfig(guildId);
-    const cargosLiberados = serverConfig.cargosLiberados || {};
-    
-    // Se não há cargos liberados, mostrar todos os cargos configurados (para compatibilidade)
-    let cargosParaMenu = {};
-    if (Object.keys(cargosLiberados).length > 0) {
-      // Usar apenas cargos liberados
-      cargosParaMenu = cargosLiberados;
-    } else {
-      // Fallback: usar todos os cargos configurados
-      cargosParaMenu = serverCargos;
-    }
-    
-    const options = Object.keys(cargosParaMenu)
-      .map((cargoId) => {
-        const role = guild.roles.cache.get(cargoId);
-        if (!role) return null;
-        
-        // Se é cargo liberado, mostrar como liberado, senão mostrar formato
-        const description = cargosLiberados[cargoId] 
-          ? "✅ Cargo liberado para aprovação"
-          : `Formato: ${serverCargos[cargoId] || "Sem formato"}`;
-        
-        return {
-          label: role.name,
-          value: cargoId,
-          description: description,
-          emoji: "🏷️",
-        };
-      })
-      .filter(Boolean);
+            option.setName('canal_aprovacao')
+                .setDescription('Canal para aprovação de tags')
+                .setRequired(true)
+        )
+        .addChannelOption(option =>
+            option.setName('canal_resultados')
+                .setDescription('Canal para resultados')
+                .setRequired(true)
+        )
+];
+
+// Registrar comandos
+async function registrarComandos() {
     try {
         const rest = new REST({ version: '10' }).setToken(TOKEN);
         console.log('🔄 Registrando comandos slash...');
         
-        .setTitle("❌ Nenhum Cargo Disponível")
+        await rest.put(
             Routes.applicationCommands(CLIENT_ID),
-          "Nenhum cargo liberado para aprovação.\n\nUse `/gerenciar-cargos-liberados adicionar` para liberar cargos.",
+            { body: commands }
         );
         
         console.log('✅ Comandos slash registrados com sucesso!');
