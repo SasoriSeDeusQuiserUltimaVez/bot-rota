@@ -74,29 +74,6 @@ function isAdminOuAdicional(guildId, userId) {
     return false;
 }
 
-// Verificar se usuário é admin do servidor ou admin adicional
-function isServerAdmin(guildId, userId) {
-  const guild = client.guilds.cache.get(guildId);
-  if (!guild) return false;
-  
-  const member = guild.members.cache.get(userId);
-  if (!member) return false;
-  
-  // Verificar se é admin do servidor
-  if (member.permissions.has(PermissionsBitField.Flags.Administrator)) return true;
-  
-  // Verificar se é dono do bot
-  if (userId === DONO_BOT_ID) return true;
-  
-  // Verificar se é admin adicional
-  const serverConfig = getServerConfig(guildId);
-  if (serverConfig.adminsAdicionais && serverConfig.adminsAdicionais[userId]) {
-    return true;
-  }
-  
-  return false;
-}
-
 // Comandos slash
 const commands = [
     new SlashCommandBuilder()
@@ -136,6 +113,35 @@ const commands = [
                 .setName('listar')
                 .setDescription('Listar cargos liberados')
         ),
+
+    new SlashCommandBuilder()
+      .setName("gerenciar-cargos-liberados")
+      .setDescription("🔧 Gerenciar cargos liberados para aprovação (apenas admins)")
+      .addSubcommand(subcommand =>
+        subcommand
+          .setName("adicionar")
+          .setDescription("Adicionar cargo aos liberados")
+          .addRoleOption(option =>
+            option.setName("cargo")
+              .setDescription("Cargo para liberar")
+              .setRequired(true)
+          )
+      )
+      .addSubcommand(subcommand =>
+        subcommand
+          .setName("remover")
+          .setDescription("Remover cargo dos liberados")
+          .addRoleOption(option =>
+            option.setName("cargo")
+              .setDescription("Cargo para remover")
+              .setRequired(true)
+          )
+      )
+      .addSubcommand(subcommand =>
+        subcommand
+          .setName("listar")
+          .setDescription("Listar cargos liberados")
+      ),
     
     new SlashCommandBuilder()
         .setName('gerenciar-admins')
@@ -165,6 +171,35 @@ const commands = [
                 .setName('listar')
                 .setDescription('Listar admins adicionais')
         ),
+
+    new SlashCommandBuilder()
+      .setName("gerenciar-admins-adicionais")
+      .setDescription("👥 Gerenciar admins adicionais (apenas admin principal)")
+      .addSubcommand(subcommand =>
+        subcommand
+          .setName("adicionar")
+          .setDescription("Adicionar admin adicional")
+          .addUserOption(option =>
+            option.setName("usuario")
+              .setDescription("Usuário para tornar admin adicional")
+              .setRequired(true)
+          )
+      )
+      .addSubcommand(subcommand =>
+        subcommand
+          .setName("remover")
+          .setDescription("Remover admin adicional")
+          .addUserOption(option =>
+            option.setName("usuario")
+              .setDescription("Usuário para remover como admin adicional")
+              .setRequired(true)
+          )
+      )
+      .addSubcommand(subcommand =>
+        subcommand
+          .setName("listar")
+          .setDescription("Listar admins adicionais")
+      ),
     
     new SlashCommandBuilder()
         .setName('pedir-tag')
