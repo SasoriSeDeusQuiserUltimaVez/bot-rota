@@ -1,4 +1,15 @@
 {
-  "autorizados": {},
+  "autorizados": {
+    "1365419023826948137": {
+      "nome": "Servidor Principal",
+      "aprovadoPor": "bot_owner",
+      "timestamp": 1755424000000
+    },
+    "1404517797299486822": {
+      "nome": "Servidor ROTA",
+      "aprovadoPor": "bot_owner", 
+      "timestamp": 1755424000000
+    }
+  },
   "pendentes": {}
 }
