@@ -46,16 +46,6 @@ let cargos = carregarDados('cargos.json');
 let config = carregarDados('config.json');
 let servidores = carregarDados('servidores.json');
 
-function getServerConfig(guildId) {
-  if (!config[guildId]) {
-    config[guildId] = {
-      cargosLiberados: {},
-      adminsAdicionais: {}
-    };
-  }
-  return config[guildId];
-}
-
 // Verificar se servidor está autorizado
 function servidorAutorizado(guildId) {
     return servidores.autorizados && servidores.autorizados[guildId];
@@ -82,6 +72,29 @@ function isAdminOuAdicional(guildId, userId) {
     }
     
     return false;
+}
+
+// Verificar se usuário é admin do servidor ou admin adicional
+function isServerAdmin(guildId, userId) {
+  const guild = client.guilds.cache.get(guildId);
+  if (!guild) return false;
+  
+  const member = guild.members.cache.get(userId);
+  if (!member) return false;
+  
+  // Verificar se é admin do servidor
+  if (member.permissions.has(PermissionsBitField.Flags.Administrator)) return true;
+  
+  // Verificar se é dono do bot
+  if (userId === DONO_BOT_ID) return true;
+  
+  // Verificar se é admin adicional
+  const serverConfig = getServerConfig(guildId);
+  if (serverConfig.adminsAdicionais && serverConfig.adminsAdicionais[userId]) {
+    return true;
+  }
+  
+  return false;
 }
 
 // Comandos slash
